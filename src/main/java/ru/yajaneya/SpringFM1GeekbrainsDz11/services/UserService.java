@@ -12,7 +12,9 @@ import ru.yajaneya.SpringFM1GeekbrainsDz11.entities.User;
 import ru.yajaneya.SpringFM1GeekbrainsDz11.repositories.UserRepositiry;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,13 @@ public class UserService implements UserDetailsService {
 
     public Optional<User> findByUsername(String username) {
         return userRepositiry.findByUsername(username);
+    }
+
+    public List<User> findAllUsers () {
+        Iterable<User> usersIterable = userRepositiry.findAll();
+        List<User> users = new ArrayList<>();
+        usersIterable.forEach(u -> users.add(u));
+        return users;
     }
 
     @Override
