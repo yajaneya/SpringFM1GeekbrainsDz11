@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.yajaneya.SpringFM1GeekbrainsDz11.entities.Role;
+import ru.yajaneya.SpringFM1GeekbrainsDz11.entities.Authority;
 import ru.yajaneya.SpringFM1GeekbrainsDz11.entities.User;
 import ru.yajaneya.SpringFM1GeekbrainsDz11.repositories.UserRepositiry;
 
@@ -32,6 +32,7 @@ public class UserService implements UserDetailsService {
         List<User> users = new ArrayList<>();
         usersIterable.forEach(u -> users.add(u));
         return users;
+
     }
 
     @Override
@@ -40,11 +41,12 @@ public class UserService implements UserDetailsService {
         User user = findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
         return new org.springframework.security.core.userdetails.User
-                (user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+                (user.getUsername(), user.getPassword(), mapAuthoritiesToAuthorities(user.getAuthorities()));
     }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+    private Collection<? extends GrantedAuthority> mapAuthoritiesToAuthorities(Collection<Authority> authorities) {
+        return authorities.stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getName())).collect(Collectors.toList());
     }
+
 }
