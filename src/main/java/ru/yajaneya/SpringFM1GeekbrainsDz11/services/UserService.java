@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.yajaneya.SpringFM1GeekbrainsDz11.entities.Authority;
 import ru.yajaneya.SpringFM1GeekbrainsDz11.entities.User;
 import ru.yajaneya.SpringFM1GeekbrainsDz11.repositories.UserRepositiry;
 
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,12 +39,21 @@ public class UserService implements UserDetailsService {
         User user = findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found", username)));
         return new org.springframework.security.core.userdetails.User
-                (user.getUsername(), user.getPassword(), mapAuthoritiesToAuthorities(user.getAuthorities()));
+                (user.getUsername(), user.getPassword(), mapAuthoritiesToAuthorities(user));
     }
 
-    private Collection<? extends GrantedAuthority> mapAuthoritiesToAuthorities(Collection<Authority> authorities) {
-        return authorities.stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getName())).collect(Collectors.toList());
+    private Collection<? extends GrantedAuthority> mapAuthoritiesToAuthorities(User user) {
+
+        Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        user.getRoles().forEach(role -> grantedAuthorities.add(new SimpleGrantedAuthority(role.getName())));
+        user.getRoles().forEach(role ->
+                role.getAuthorities().forEach(
+                        authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority.getName()))));
+        user.getAuthorities().forEach(authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority.getName())));
+
+        grantedAuthorities.forEach(grantedAuthority -> System.out.println(grantedAuthority.toString()));
+
+        return grantedAuthorities;
     }
 
 }

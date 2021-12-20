@@ -22,8 +22,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         log.info("Dao Authentication Provider");
         http.authorizeRequests()
-                .antMatchers("/users_info").hasAuthority("TAKE_USERS_INFO")
-                .antMatchers("/user_info").hasAuthority("TAKE_USER_INFO")
+                .antMatchers("/users_info").hasRole("ADMIN")
+                .antMatchers("/user_info").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/user").hasAuthority("TAKE_USER_PAGE")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()

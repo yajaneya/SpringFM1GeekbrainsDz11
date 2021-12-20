@@ -19,6 +19,11 @@ public class DemoController {
         return "home page";
     }
 
+    @GetMapping("/user")
+    public String getUserPage () {
+        return "User's page";
+    }
+
     @GetMapping("/user_info")
     public String daoTestPage(Principal principal) {
         System.out.println(principal);
